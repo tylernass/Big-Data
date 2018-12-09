@@ -1,3 +1,5 @@
+Big Data Research with Dr. Franklin
+
 Description: Big data research looking at the relationships between electricity prices and factors such as weather, zip code, time of day, etc.
 
 Programs:
