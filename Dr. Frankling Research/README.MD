@@ -1,0 +1,1 @@
+Overview: This is a research project under Dr. Mike Franklin of University of Chicago. The aim of the project is to analyze smarter meter data and understand the various relationships between electricity prices and other factors such as weather
