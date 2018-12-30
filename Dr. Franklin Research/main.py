@@ -77,28 +77,31 @@ def tbl():
     sql_command = """CREATE TABLE smd (Timestampp TIMESTAMPTZ NULL, Energy DOUBLE PRECISION  NULL, Zipcode INT NULL, CustomerID BIGINT NULL);"""
     mycursor = conn.cursor()
     mycursor.execute(sql_command)
-
+    cvv()
     # Open csv files
     # 12/02/12018 0030
 
 # To be run in loc for every file
 # Progress: Currently need to finish running and testing scripts
 def cvv():
-    cnct()
     vals = []
     for i in os.listdir():
         with open(i, 'r') as f:
-            reader = csv.reader(f, delimiter = ',', converters = int)
+            reader = csv.reader(f, delimiter = ',')
+            firstline = True
             for row in reader:
-                zipcode = row[0].trim() # if not use .strip()
+                if firstline:
+                    firstline = False
+                    continue
+                # Can I make this faster?
+                zipcode = row[0] # if not use .strip()
                 vals.append(zipcode)
-                idd = row[3].trim()
+                idd = row[3]
                 vals.append(idd)
-                if row[4] != 'INTERVAL_READING_DATE':
-                    d = datetime.strptime(row[4], '%m/%d/%Y')
-                    vals.append(d)
-                for x in range(8, 56):
-                    nrg = row[x].trim()
+                d = datetime.strptime(row[4], '%m/%d/%Y')
+                vals.append(d)
+                for x in range(7, 54):
+                    nrg = row[x]
                     vals.append(nrg)
             insrt(*vals)
             # Insrt(*vals) runs after every ROW in each FILE
@@ -112,9 +115,9 @@ def insrt(*vals):
     # Val[3:51] == NRG values for respective timestamps
     # Timestamp Energy Zipcode CustomerID
     timee = []
-    sql = "INSERT INTO smd(Timestampp, Energy, Zipcode, CustomerID) VALUES (%s, %s, %s, %s);"
+    sqql = "INSERT INTO smd(Timestampp, Energy, Zipcode, CustomerID) VALUES (%s, %s, %s, %s);"
     tme = 0
-    for x in range(3, 51):
+    for x in range(3, 50):
         if x % 2 == 0:
              tme = ((x-3))*50 + 50 # 4 == 0100 6 == 0200 8 == 0300
              one = tme /100
@@ -130,24 +133,8 @@ def insrt(*vals):
 
 
         tmm = time(timee[0], timee[1])
-
-        # 10 pm: 1000
-
-        timestmp = datetime.datetime.combine(vals[2], tmm)
-        val = ((timestmp)), vals[x], vals[0], vals[1])
-        mycursor.execute(sql, val)
-
-# Function used to connect to database
-def cnct():
-    conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
-    mycursor = conn.cursor()
-    mycursor.execute(sql_command)
-
-
-# TODO
-# CREATE A TESTTABLE AND RUN TESTS
-
-
-
+        timestmp = datetime.combine(vals[2], tmm)
+        val = ((timestmp), vals[x], vals[0], vals[1])
+        mycursor.execute(sqql, val)
 
 
