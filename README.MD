@@ -1,8 +1,13 @@
-**Big Data Research with Dr. Franklin**
+**Big Data  Programs**
 
+*Dr. Franklin Research*
 Description: Big data research looking at the relationships between electricity prices and factors such as weather, zip code, time of day, etc.
 
 Programs:
-- mgt.py: Used to migrate ~25 .zip files from a central repository to an individual repository and then create n respective repositiories
-- unzp.py: For n respective repositories, unzip every zip file in each nth directory
-- dlt.py: Delete zip files in every nth directory
+- main.py: This program contains all the scripts to migrate data from a ZIP file to a PostgreSQL Database
+
+*Trading Algorithms*
+Description: Trading algorithm using standard DS Libraries such as Pandas/Numpy to trade Crude Oil
+
+Programs:
+- main.py: Program with algorithm
