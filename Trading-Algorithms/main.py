@@ -6,17 +6,13 @@ import pandas_datareader.data as web
 
 style.use('ggplot')
 df = pd.read_csv('tsla.csv', parse_dates = True, index_col=0)
-# Define the dataframe to be built out
-df['100ma'] = df['Adj Close'].rolling(window=100, min_periods=0).mean()
-df.dropna(inplace=True)
-print(df.head())
+df['100ma'] = df['Adj Close'].rolling(window=100).mean()
+df_ohlc = df['Adj Close'].resample('10D').ohlc()
+df_volume = df['Volume'].resample('10D').sum()
+print(df_ohlc.head())
 
 # Build the axes
 ax1 = plt.subplot2grid((6,1), (0, 0), rowspan=5, colspan=1)
 ax2 = plt.subplot2grid((6,1), (5, 0), rowspan=1, colspan=1, sharex=ax1)
-
-ax1.plot(df.index, df['Adj Close'])
-ax1.plot(df.index, df['100ma'])
-ax2.bar(df.index, df['Volume'])
 
 plt.show()
