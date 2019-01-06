@@ -1,86 +1,3 @@
-# Starting location: /tartarus/DATASETS/SmartMeterData
-orig = "/tartarus/DATASETS/SmartMeterData"
-loc = "/tartarus/tylernass"
-
-import os, zipfile
-import shutil
-import math
-import datetime
-from datetime import datetime, date, time
-import csv
-from zipfile import ZipFile
-import psycopg2
-
-# Function to be ran in orig location "/tartarus/DATASETS/SmartMeterData"
-# Step 1: Create directory for the files in loc /tartarus/tylernass, with respect to their names
-def mkdr():
-    for i in os.listdir():
-        nm = i[:6]
-        os.mkdir(loc + "/" + str(nm))
-    mgt()
-
-# Step 2: Migrate all .zip files in (orig) to (loc)
-def mgt():
-    for i in os.listdir():
-        nw = (loc + "/" + str(i))
-        cp = "/tartarus/DATASETS/SmartMeterData/" + str(i)
-        shutil.copy2(cp, nw)
-    unzpa()
-
-# Step 3: Unzip the 1st .zip files (Ex: 201503.zip)
-def unzpa():
-    os.chdir(loc)
-    for i in os.listdir():
-        zf = ZipFile(loc + "/" + str(i) + "/" + str(i) + ".zip")
-        zf.extractall(loc + "/" + str(i))
-        os.remove(i)
-        # Delete 201503.zip
-
-
-# Step 4: Unzip the 2nd .zip files that were originally in the 1st .zip file (Ex: ANONYMOUS_DATA_201504_60453.csv.zip). Delete original .zip directory when done.
-def unzpb():
-    os.chdir(loc)
-    for i in os.listdir():
-        zf = ZipFile(loc + "/" + str(i) + "/" + str(i) + ".zip")
-        zf.extractall(loc + "/" + str(i))
-    dlt()
-
-# Step 5: Delete all .csv.zip files
-def dlt():
-    os.chdir(loc)
-    for i in os.listdir():
-        j = os.chdir(loc + str(i))
-        for j in os.listdir():
-            if j[-4] == ".zip":
-                os.remove(j)
-    tbl()
-# /tartarus/tylernass/201503abc
-
-# Step 5: In progress
-
-# def tbl():
-#     conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
-#     sql_command = """CREATE TABLE smd (
-#     ...
-#     ...   Timestamp   TIMESTAMPTZ       NULL,
-#     ...   Energy      DOUBLE PRECISION  NULL,
-#     ...   Zipcode     INT               NULL,
-#     ...   CustomerID  BIGINT               NULL
-#     ... );"""
-#     conn.execute(sql_command)
-#     cvv()
-
-
-# Step 6: Function used to create a table. Can be used anywhere.
-def tbl():
-    conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
-    sql_command = """CREATE TABLE smd (Timestampp TIMESTAMPTZ NULL, Energy DOUBLE PRECISION  NULL, Zipcode INT NULL, CustomerID BIGINT NULL);"""
-    mycursor = conn.cursor()
-    mycursor.execute(sql_command)
-    cvv()
-    # Open csv files
-    # 12/02/12018 0030
-
 # To be run in loc for every file
 # Progress: Currently need to finish running and testing scripts
 def cvv():
@@ -93,7 +10,6 @@ def cvv():
                 if firstline:
                     firstline = False
                     continue
-                # Can I make this faster?
                 zipcode = row[0] # if not use .strip()
                 vals.append(zipcode)
                 idd = row[3]
@@ -141,8 +57,3 @@ def insrt(*vals):
 def cnct():
     conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
     mycursor = conn.cursor()
-
-
-# TODO
-# FIX TME CALCULATIONS
-
