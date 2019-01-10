@@ -1,3 +1,87 @@
+# Starting location: /tartarus/DATASETS/SmartMeterData
+orig = "/tartarus/DATASETS/SmartMeterData"
+loc = "/tartarus/tylernass"
+
+import os, zipfile
+import shutil
+import datetime
+from datetime import datetime, date, time
+import csv
+from zipfile import ZipFile
+import psycopg2
+
+# Function to be ran in orig location "/tartarus/DATASETS/SmartMeterData"
+# Step 1: Create directory for the files in loc /tartarus/tylernass, with respect to their names
+def mkdr():
+    for i in os.listdir():
+        nm = i[:6]
+        os.mkdir(loc + "/" + str(nm))
+    mgt()
+
+# Step 2: Migrate all .zip files in (orig) to (loc)
+def mgt():
+    for i in os.listdir():
+        nw = (loc + "/" + str(i))
+        cp = "/tartarus/DATASETS/SmartMeterData/" + str(i)
+        shutil.copy2(cp, nw)
+    unzpa()
+
+# Step 3: Unzip the 1st .zip files (Ex: 201503.zip)
+def unzpa():
+    os.chdir(loc)
+    for i in os.listdir():
+        zf = ZipFile(loc + "/" + str(i) + "/" + str(i) + ".zip")
+        zf.extractall(loc + "/" + str(i))
+        os.remove(i)
+        # Delete 201503.zip
+
+
+# Step 4: Unzip the 2nd .zip files that were originally in the 1st .zip file (Ex: ANONYMOUS_DATA_201504_60453.csv.zip). Delete original .zip directory when done.
+def unzpb():
+    os.chdir(loc)
+    for i in os.listdir():
+        zf = ZipFile(loc + "/" + str(i) + "/" + str(i) + ".zip")
+        zf.extractall(loc + "/" + str(i))
+    dlt()
+
+# Step 5: Delete all .csv.zip files
+def dlt():
+    os.chdir(loc)
+    for i in os.listdir():
+        j = os.chdir(loc + str(i))
+        for j in os.listdir():
+            if j[-4] == ".zip":
+                os.remove(j)
+    tbl()
+# /tartarus/tylernass/201503abc
+
+# Step 5: In progress
+
+# def tbl():
+#     conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
+#     sql_command = """CREATE TABLE smd (
+#     ...
+#     ...   Timestamp   TIMESTAMPTZ       NULL,
+#     ...   Energy      DOUBLE PRECISION  NULL,
+#     ...   Zipcode     INT               NULL,
+#     ...   CustomerID  BIGINT               NULL
+#     ... );"""
+#     conn.execute(sql_command)
+#     cvv()
+
+
+# Step 6: Function used to create a table. Can be used anywhere.
+def tbl():
+    conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
+    sql_command = """CREATE TABLE Test(Energy DOUBLE PRECISION  NOT NULL, Zipcode INT NOT NULL, CustomerID BIGINT NOT NULL);"""
+    mycursor = conn.cursor()
+    mycursor.execute(sql_command)
+    cvv()
+    # Open csv files
+    # 12/02/12018 0030
+
+# To be run in loc for every file
+# Progress: Currently need to finish running and testing scripts
 def cvv():
     vals = []
     for i in os.listdir():
@@ -13,14 +97,17 @@ def cvv():
                 idd = row[3]
                 vals.append(idd)
                 d = datetime.strptime(row[4], '%m/%d/%Y')
+                print(d)
                 vals.append(d)
-                for x in range(7, 55):
+
+                for x in range(7, 54):
                     nrg = row[x]
                     vals.append(nrg)
             insrt(*vals)
             # Insrt(*vals) runs after every ROW in each FILE
 # Date 03/31/2015
 # Function used to connect to database
+
 
 # Function used to migrate data from csv file to database. To be run in relevant location.
 def insrt(*vals):
@@ -36,86 +123,32 @@ def insrt(*vals):
              30]
 
     for x in range(0, 96, 2):
-        # a = timee[x]
-        # b = timee[x + 1]
-        # t = time(a, b)
-        # date = vals[2]
-        # timestmp = datetime.combine(date, t).strftime('%m/%d/%Y %H:%M:%S')
-
+        a = timee[x]
+        b = timee[x + 1]
+        t = time(a, b)
+        # date = datetime.strptime(vals[2], "%m/%d/%Y")
+        timestmp = datetime.combine(vals[2], t)
         if x == 0:
-            y = 3
+            y = 0
         else:
-            y = int(x/2 + 3)
-
-        val = (vals[y], vals[0], vals[1])
+            y = x/2 + 3
+        val = [(timestmp), vals[y], vals[0], vals[1]]
         sqlval.append(val)
 
-    sqql = "INSERT INTO EnergyUsage(Energy, Zipcode, CustomerID) VALUES(%s);"
 
-    # for x in range(0, len(sqlval)):
-    #     if x == (len(sqlval)-1):
-    #         y = "(%s, %s, %s, %s)"
-    #     else:
-    #         y = "(%s, %s, %s, %s), "
-    #
-    #     sqql = sqql + y
-    try:
-        mycursor.executemany(sqql, sqlval)
-        if(mycursor.executemany(sqql, sqlval)):
-            print('Statement Executed')
-            conn.commit()
-    except:
-        conn.rollback()
+    sqql = "INSERT INTO smd(Timestampp, Energy, Zipcode, CustomerID) VALUES "
+    for x in range(0, 48):
+        if x == 47:
+            y = "(%s, %s, %s, %s);"
+        else:
+            y = "(%s, %s, %s, %s), "
 
-cvv()
-# python /tartarus/tylernass/sqlinsrt.py
-# conn.close()
-# scp -r sqlinsrt.py tylernass@chaos.cs.uchicago.edu:/tartarus/tylernass
-# scp tylernass@chaos.cs.uchicago.edu:/Users/tylernass/Desktop/energy-research/Chaos-Scripts/sqlinsrt.py tart
-#
-# def prnt():
-# ...     conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
-# ...     mycursor = conn.cursor()
-# ...     records = mycursor.fetchall()
-# ...     for row in records:
-# ...             print(row)
+        sqql = sqql + y
+
+    mycursor.execute(sqql, sqlval)
 
 
 
-
-#### NEW EXAMPLE ####
-
-# import psycopg2
-# import config
-#
-#
-# def insert_vendor_list():
-#     vendor_list = [
-#     ('AKM Semiconductor Inc.',),
-#     ('Asahi Glass Co Ltd.',),
-#     ('Daikin Industries Ltd.',),
-#     ('Dynacast International Inc.',),
-#     ('Foster Electric Co. Ltd.',),
-#     ('Murata Manufacturing Co. Ltd.',)]
-#
-#     conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
-#     sql_command = """CREATE TABLE abc(vendor_name text NOT NULL);"""
-#     cur = conn.cursor()
-#     cur.execute(sql_command)
-#     sql = "INSERT INTO abc(vendor_name) VALUES(%s)"
-#     try:
-#         # execute the INSERT statement
-#         cur.executemany(sql,vendor_list)
-#         # commit the changes to the database
-#         conn.commit()
-#         # close communication with the database
-#         cur.close()
-#     except (Exception, psycopg2.DatabaseError) as error:
-#         print(error)
-#     finally:
-#         if conn is not None:
-#             conn.close()
-#
-#
-
-insert_vendor_list()
+def cnct():
+    conn = psycopg2.connect("dbname = smd user = tylernass password = test123")
+    mycursor = conn.cursor()
