@@ -97,17 +97,14 @@ def cvv():
                 idd = row[3]
                 vals.append(idd)
                 d = datetime.strptime(row[4], '%m/%d/%Y')
-                print(d)
                 vals.append(d)
-
-                for x in range(7, 54):
+                for x in range(7, 55):
                     nrg = row[x]
                     vals.append(nrg)
             insrt(*vals)
             # Insrt(*vals) runs after every ROW in each FILE
 # Date 03/31/2015
 # Function used to connect to database
-
 
 # Function used to migrate data from csv file to database. To be run in relevant location.
 def insrt(*vals):
@@ -123,30 +120,36 @@ def insrt(*vals):
              30]
 
     for x in range(0, 96, 2):
-        a = timee[x]
-        b = timee[x + 1]
-        t = time(a, b)
-        # date = datetime.strptime(vals[2], "%m/%d/%Y")
-        timestmp = datetime.combine(vals[2], t)
+        # a = timee[x]
+        # b = timee[x + 1]
+        # t = time(a, b)
+        # date = vals[2]
+        # timestmp = datetime.combine(date, t).strftime('%m/%d/%Y %H:%M:%S')
+
         if x == 0:
-            y = 0
+            y = 3
         else:
-            y = x/2 + 3
-        val = [(timestmp), vals[y], vals[0], vals[1]]
+            y = int(x/2 + 3)
+
+        val = (vals[y], vals[0], vals[1])
         sqlval.append(val)
 
+    sqql = "INSERT INTO EnergyUsage(Energy, Zipcode, CustomerID) VALUES(%s);"
 
-    sqql = "INSERT INTO smd(Timestampp, Energy, Zipcode, CustomerID) VALUES "
-    for x in range(0, 48):
-        if x == 47:
-            y = "(%s, %s, %s, %s);"
-        else:
-            y = "(%s, %s, %s, %s), "
-
-        sqql = sqql + y
-
-    mycursor.execute(sqql, sqlval)
-
+    # for x in range(0, len(sqlval)):
+    #     if x == (len(sqlval)-1):
+    #         y = "(%s, %s, %s, %s)"
+    #     else:
+    #         y = "(%s, %s, %s, %s), "
+    #
+    #     sqql = sqql + y
+    try:
+        mycursor.executemany(sqql, sqlval)
+        if(mycursor.executemany(sqql, sqlval)):
+            print('Statement Executed')
+            conn.commit()
+    except:
+        conn.rollback()
 
 
 def cnct():
