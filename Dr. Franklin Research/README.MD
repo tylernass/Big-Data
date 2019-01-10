@@ -4,4 +4,5 @@
 
 **Programs**
 
+cnct.py: Script to connect to PostgreSQL database
 main.py: Program that contains multiple scripts to migrate a ZIP file to a PostgreSQL database
