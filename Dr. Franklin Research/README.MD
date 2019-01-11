@@ -10,3 +10,4 @@
 - import.py: This file contains all of the respective imported libraries
 - main.py: This program contains all the scripts to migrate data from a ZIP file to a PostgreSQL Database
 - mgt.py: Script used to migrate the CSV files from one directory to another
+- tbl.py: Creates table in SQL Database
