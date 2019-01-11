@@ -12,3 +12,5 @@
 - mgt.py: Script used to migrate the CSV files from one directory to another
 - mkdir.py: Create a directory for respective CSV files
 - tbl.py: Creates table in SQL Database
+- unzp.py: Unzip main files containing other zip files
+- unzpb.py: Unzip those other files
