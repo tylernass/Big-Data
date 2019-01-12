@@ -1,7 +1,5 @@
-import os, zipfile
-import shutil
-import datetime
+import os, csv, datetime, psycopg2
+import datetime as dt
+import timeit
 from datetime import datetime, date, time
-import csv
-from zipfile import ZipFile
-import psycopg2
+from dateutil.parser import parse
