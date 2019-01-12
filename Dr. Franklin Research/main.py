@@ -80,10 +80,10 @@ def tbl():
     # Open csv files
     # 12/02/12018 0030
 
-sqlval=[]
+sqlval = []
 def cvv():
-    vals = []
     for i in os.listdir():
+        vals = []
         with open(i, 'r') as f:
             reader = csv.reader(f, delimiter = ',')
             firstline = True
@@ -98,12 +98,13 @@ def cvv():
                 if row[4] == 'DELIVERY CLASS PASSED':
                     continue
                 else:
-                    d = datetime.strptime(row[4], '%m/%d/%Y')
+                    # d = datetime.strptime(row[4], '%m/%d/%Y')
+                    d = parse(row[4])
                     vals.append(d)
                 for x in range(7, 55):
                     nrg = row[x]
                     vals.append(nrg)
-        insrt(*vals)
+                insrt(*vals)
             # Insrt(*vals) runs after every ROW in each FILE
 # Date 03/31/2015
 # Function used to connect to database
@@ -111,6 +112,7 @@ def cvv():
 def insrt(*vals):
     # Vals[0:2] == Zipcode, ID, Date
     # Val[3:51] == NRG values for respective timestamps
+
     timee = [0, 0, 0, 30, 1, 0, 1, 30, 2, 0, 2, 30, 3, 0, 3, 30, 4, 0, 4, 30, 5, 0, 5, 30, 6, 0, 6, 30, 7, 0, 7, 30, 8,
              0, 8, 30,
              9, 0, 9, 30, 10, 0, 10, 30, 11, 0, 11, 30, 12, 0, 12, 30, 13, 0, 13, 30, 14, 0, 14, 30, 15, 0, 15, 30, 16,
@@ -124,7 +126,10 @@ def insrt(*vals):
         b = timee[x + 1]
         t = time(a, b)
         date = vals[2]
-        timestmp = datetime.combine(date, t).strftime('%m/%d/%Y %H:%M:%S')
+        try:
+            timestmp = datetime.combine(date, t).strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            continue
 
         if x == 0:
             y = 3
@@ -145,6 +150,7 @@ def insrt(*vals):
     #     sqql = sqql + y
     try:
         mycursor.executemany(sqql, sqlval)
+        sqlval.clear()
     except:
         conn.rollback()
 
