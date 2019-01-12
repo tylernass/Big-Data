@@ -12,14 +12,15 @@ def insrt(*vals):
              16, 30, 17, 0, 17, 30, 18, 0, 18, 30, 19, 0, 19, 30, 20, 0, 20, 30, 21, 0, 21, 30, 22, 0, 22, 30, 23, 0,
              23,
              30]
+    dtee = parse(vals[2])
 
     for x in range(0, 96, 2):
         a = timee[x]
         b = timee[x + 1]
         t = time(a, b)
-        date = vals[2]
+
         try:
-            timestmp = datetime.combine(date, t).strftime('%Y-%m-%d %H:%M:%S')
+            timestmp = datetime.combine(dtee, t).strftime('%Y-%m-%d %H:%M:%S')
         except:
             continue
 
@@ -31,8 +32,9 @@ def insrt(*vals):
         val = (timestmp, vals[y], vals[0], vals[1])
         sqlval.append(val)
 
+    print('2. Done')
     sqql = ("INSERT INTO EnergyUsage(Timestampp, Energy, Zipcode, CustomerID) VALUES (%s, %s, %s, %s)")
-
+    print('3. Done')
     # for x in range(0, len(sqlval)):
     #     if x == (len(sqlval)-1):
     #         y = "(%s, %s, %s, %s)"
@@ -43,5 +45,10 @@ def insrt(*vals):
     try:
         mycursor.executemany(sqql, sqlval)
         sqlval.clear()
+        x = timeit.default_timer() - strt
+        print('Time to execute: ', x)
     except:
         conn.rollback()
+
+
+cvv()
