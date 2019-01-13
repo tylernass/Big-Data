@@ -32,9 +32,7 @@ def insrt(*vals):
         val = (timestmp, vals[y], vals[0], vals[1])
         sqlval.append(val)
 
-    print('2. Done')
     sqql = ("INSERT INTO EnergyUsage(Timestampp, Energy, Zipcode, CustomerID) VALUES (%s, %s, %s, %s)")
-    print('3. Done')
     # for x in range(0, len(sqlval)):
     #     if x == (len(sqlval)-1):
     #         y = "(%s, %s, %s, %s)"
@@ -45,10 +43,7 @@ def insrt(*vals):
     try:
         mycursor.executemany(sqql, sqlval)
         sqlval.clear()
-        x = timeit.default_timer() - strt
-        print('Time to execute: ', x)
     except:
         conn.rollback()
-
-
+        
 cvv()
