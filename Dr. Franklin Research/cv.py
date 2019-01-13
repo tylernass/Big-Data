@@ -1,3 +1,5 @@
+# To be run in loc for every file
+# Progress: Currently need to finish running and testing scripts
 sqlval = []
 strt = 0
 def cvv():
@@ -6,7 +8,6 @@ def cvv():
             vals = []
             reader = csv.reader(f, delimiter = ',')
             firstline = True
-            strt = timeit.default_timer()
             for row in reader:
                 if firstline:
                     firstline = False
@@ -28,3 +29,4 @@ def cvv():
                 insrt(*vals)
                 print('1. Done')
                 vals.clear()
+            # Insrt(*vals) runs after every ROW in each FILE
