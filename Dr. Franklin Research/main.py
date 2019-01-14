@@ -80,31 +80,37 @@ def tbl():
     # Open csv files
     # 12/02/12018 0030
 
+# To be run in loc for every file
+# Progress: Currently need to finish running and testing scripts
 sqlval = []
+strt = 0
 def cvv():
     for i in os.listdir():
-        vals = []
         with open(i, 'r') as f:
+            vals = []
             reader = csv.reader(f, delimiter = ',')
             firstline = True
             for row in reader:
                 if firstline:
                     firstline = False
                     continue
-                zipcode = row[0] # if not use .strip()
-                vals.append(zipcode)
-                idd = row[3]
-                vals.append(idd)
-                if row[4] == 'DELIVERY CLASS PASSED':
-                    continue
                 else:
-                    # d = datetime.strptime(row[4], '%m/%d/%Y')
-                    d = parse(row[4])
-                    vals.append(d)
-                for x in range(7, 55):
-                    nrg = row[x]
-                    vals.append(nrg)
+                    zipcode = row[0] # if not use .strip()
+                    vals.append(zipcode)
+                    idd = row[3]
+                    vals.append(idd)
+                    if row[4] == 'DELIVERY CLASS PASSED':
+                        continue
+                    else:
+                        # d = datetime.strptime(row[4], '%m/%d/%Y')
+                        d = row[4]
+                        vals.append(d)
+                    for x in range(7, 55):
+                        nrg = row[x]
+                        vals.append(nrg)
                 insrt(*vals)
+                print('1. Done')
+                vals.clear()
             # Insrt(*vals) runs after every ROW in each FILE
 # Date 03/31/2015
 # Function used to connect to database
@@ -120,14 +126,15 @@ def insrt(*vals):
              16, 30, 17, 0, 17, 30, 18, 0, 18, 30, 19, 0, 19, 30, 20, 0, 20, 30, 21, 0, 21, 30, 22, 0, 22, 30, 23, 0,
              23,
              30]
+    dtee = parse(vals[2])
 
     for x in range(0, 96, 2):
         a = timee[x]
         b = timee[x + 1]
         t = time(a, b)
-        date = vals[2]
+
         try:
-            timestmp = datetime.combine(date, t).strftime('%Y-%m-%d %H:%M:%S')
+            timestmp = datetime.combine(dtee, t).strftime('%Y-%m-%d %H:%M:%S')
         except:
             continue
 
@@ -140,7 +147,6 @@ def insrt(*vals):
         sqlval.append(val)
 
     sqql = ("INSERT INTO EnergyUsage(Timestampp, Energy, Zipcode, CustomerID) VALUES (%s, %s, %s, %s)")
-
     # for x in range(0, len(sqlval)):
     #     if x == (len(sqlval)-1):
     #         y = "(%s, %s, %s, %s)"
