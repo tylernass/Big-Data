@@ -8,6 +8,8 @@
 - cv.py: Reads respective variables from a CSV file
 - dlt.py: Deletes extra ZIP files
 - import.py: This file contains all of the respective imported libraries
+- insrt.py: Used to insert values into PostgreSQL database
+- insrtc.py: Used to insert values into CSV files
 - main.py: This program contains all the scripts to migrate data from a ZIP file to a PostgreSQL Database
 - mgt.py: Script used to migrate the CSV files from one directory to another
 - mkdir.py: Create a directory for respective CSV files
